@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const db = require("../config/db");
 const router = express.Router();
 require("dotenv").config();
+const authMiddleware = require("../middleware/authMiddleware");
+
 
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
@@ -27,7 +29,15 @@ router.post("/login", (req, res) => {
     if (!validPassword) return res.status(400).json({ error: "Invalid credentials" });
 
     const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.json({ token, role: user.role });
+    res.json({ token, user });
+  });
+});
+
+// Get Authenticated User
+router.get("/me", authMiddleware, (req, res) => {
+  db.get("SELECT id, name, email, role FROM users WHERE id = ?", [req.user.id], (err, user) => {
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json({ user });
   });
 });
 
