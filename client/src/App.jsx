@@ -11,6 +11,7 @@ import PrivateRoute from './components/PrivateRoute';
 import PublicRoute from './components/PublicRoute';
 import NotFound from './pages/NotFound';
 import { checkAuth } from './features/authSlice';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -41,6 +42,7 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PWAInstallPrompt />
       <Navbar />
       <Routes>
         {/* Public Routes */}
