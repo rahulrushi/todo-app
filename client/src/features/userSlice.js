@@ -11,11 +11,15 @@ export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
 });
 
 export const updateUser = createAsyncThunk('users/updateUser', async (user) => {
-  const response = await axios.put(`${API_URL}/users/${user.id}`, user, {
-    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-  });
+  const { id, name, email, role } = user;
+  const response = await axios.put(
+    `${API_URL}/users/${id}`,
+    { name, email, role }, // Only send updated fields
+    { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+  );
   return response.data;
 });
+
 
 export const deleteUser = createAsyncThunk('users/deleteUser', async (id) => {
   await axios.delete(`${API_URL}/users/${id}`, {

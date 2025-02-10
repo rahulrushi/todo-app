@@ -15,7 +15,7 @@ const TodoList = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (newTodo.trim()) {
-      dispatch(addTodo({ text: newTodo, completed: false }));
+      dispatch(addTodo({ title: newTodo, completed: false }));
       setNewTodo('');
     }
   };
@@ -43,7 +43,7 @@ const TodoList = () => {
           </button>
         </div>
       </form>
-      <div className="space-y-2">
+      <div className="space-y-2 text-amber-300">
         {todos.map((todo) => (
           <TodoItem key={todo.id} todo={todo} />
         ))}

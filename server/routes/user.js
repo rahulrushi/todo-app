@@ -19,11 +19,6 @@ router.put("/:id", async (req, res) => {
   const { name, email, role, password } = req.body;
   const userId = req.params.id;
 
-  // // Check if the user is an admin
-  // if (req.user.role !== "admin") {
-  //   return res.status(403).json({ message: "Access denied" });
-  // }
-
   // Validate role (only "admin" or "user" allowed)
   if (role && !["user", "admin"].includes(role)) {
     return res.status(400).json({ message: "Invalid role" });

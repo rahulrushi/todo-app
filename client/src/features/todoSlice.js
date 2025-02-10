@@ -18,11 +18,15 @@ export const addTodo = createAsyncThunk('todos/addTodo', async (todo) => {
 });
 
 export const updateTodo = createAsyncThunk('todos/updateTodo', async (todo) => {
-  const response = await axios.put(`${API_URL}/todos/${todo.id}`, todo, {
+  const response = await axios.put(`${API_URL}/todos/${todo.id}`, {
+    title: todo.title,  // Ensure title is sent
+    completed: todo.completed,  // Ensure completed is sent
+  }, {
     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
   });
-  return response.data;
+  return response.data;  // Expect updated todo from backend
 });
+
 
 export const deleteTodo = createAsyncThunk('todos/deleteTodo', async (id) => {
   await axios.delete(`${API_URL}/todos/${id}`, {

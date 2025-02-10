@@ -1,17 +1,29 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateUser, deleteUser } from '../features/userSlice';
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUser, deleteUser, fetchUsers } from "../features/userSlice";
 
 const UserList = () => {
   const dispatch = useDispatch();
   const { items: users, loading } = useSelector((state) => state.users);
 
-  const handleRoleUpdate = (userId, newRole) => {
-    dispatch(updateUser({ id: userId, role: newRole }));
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [editedUser, setEditedUser] = useState({});
+
+  const handleEditClick = (user) => {
+    setEditingUserId(user.id);
+    setEditedUser(user); // Store current user data for editing
+  };
+
+  const handleSaveClick = async () => {
+    if (editedUser.id) {
+      await dispatch(updateUser(editedUser));
+      dispatch(fetchUsers()); // Refresh user list after update
+    }
+    setEditingUserId(null);
   };
 
   const handleDeleteUser = (userId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (window.confirm("Are you sure you want to delete this user?")) {
       dispatch(deleteUser(userId));
     }
   };
@@ -42,22 +54,63 @@ const UserList = () => {
         <tbody className="divide-y divide-gray-200">
           {users.map((user) => (
             <tr key={user.id}>
-              <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <select
-                  value={user.role}
-                  onChange={(e) => handleRoleUpdate(user.id, e.target.value)}
-                  className="border rounded px-2 py-1"
-                >
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                </select>
+                {editingUserId === user.id ? (
+                  <input
+                    type="text"
+                    value={editedUser.name}
+                    onChange={(e) => setEditedUser({ ...editedUser, name: e.target.value })}
+                    className="border px-2 py-1 rounded"
+                  />
+                ) : (
+                  user.name
+                )}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
+                {editingUserId === user.id ? (
+                  <input
+                    type="text"
+                    value={editedUser.email}
+                    onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
+                    className="border px-2 py-1 rounded"
+                  />
+                ) : (
+                  user.email
+                )}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {editingUserId === user.id ? (
+                  <select
+                    value={editedUser.role}
+                    onChange={(e) => setEditedUser({ ...editedUser, role: e.target.value })}
+                    className="border rounded px-2 py-1"
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                ) : (
+                  user.role
+                )}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {editingUserId === user.id ? (
+                  <button
+                    onClick={handleSaveClick}
+                    className="px-2 py-1 text-green-500 hover:bg-green-100 rounded"
+                  >
+                    Save
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleEditClick(user)}
+                    className="px-2 py-1 text-blue-500 hover:bg-blue-100 rounded"
+                  >
+                    Edit
+                  </button>
+                )}
                 <button
                   onClick={() => handleDeleteUser(user.id)}
-                  className="text-red-500 hover:text-red-700"
+                  className="ml-2 text-red-500 hover:text-red-700"
                 >
                   Delete
                 </button>
